@@ -32,9 +32,12 @@ function draw() {
   document.querySelector('#panel-title').textContent = stages.find(button => button.dataset.stage===stage)?.textContent || '运行对账';
   detail.hidden = !batch;
   if (batch) {
+    const final = batch.status==='APPROVED' || batch.status==='PROVISIONAL';
     document.querySelector('#run-status').textContent = `${batch.id.slice(0,10)} · ${batch.status} · r${batch.revision}`;
-    detail.querySelector('[value="APPROVED"]').disabled = !report.balance.releasable || batch.status==='APPROVED';
-    detail.querySelector('[value="HELD"]').disabled = batch.status==='APPROVED';
+    const checks = report.balance;
+    detail.querySelector('[value="APPROVED"]').disabled = final || !checks.releasable;
+    detail.querySelector('[value="PROVISIONAL"]').disabled = final || !checks.proxy_releasable;
+    detail.querySelector('[value="HELD"]').disabled = final;
     evidence.href = `/api/runs/${batch.id}/evidence`;
   }
 }
@@ -100,7 +103,7 @@ detail.addEventListener('submit',event=>{
   perform(async()=>{
     const payload={status:event.submitter.value,revision:batch.revision,note:detail.elements.note.value};
     const result=await request(`/api/runs/${batch.id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    show(result,true); announce(result.status==='APPROVED'?'批次已签发':'批次已暂缓'); await refresh();
+    show(result,true); announce(result.status==='APPROVED'?'批次已正式签发':result.status==='PROVISIONAL'?'批次已按临时代理交付':'批次已暂缓'); await refresh();
   });
 });
 preview(stage);

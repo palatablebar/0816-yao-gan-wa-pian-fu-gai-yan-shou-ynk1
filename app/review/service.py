@@ -32,6 +32,11 @@ def execute(store, data):
     return store.register(run_id, report)
 
 
+REVIEW_STATUSES = ("APPROVED", "PROVISIONAL", "HELD")
+# 正式签发与临时代理交付都是终态，重跑不得覆盖。
+FINAL_STATUSES = ("APPROVED", "PROVISIONAL")
+
+
 def review(store, run_id, values):
     if not isinstance(values, dict):
         raise DomainIssue("REVIEW_FIELDS")
@@ -39,7 +44,7 @@ def review(store, run_id, values):
     if (
         type(revision) is not int
         or revision < 0
-        or status not in ("APPROVED", "HELD")
+        or status not in REVIEW_STATUSES
         or not isinstance(note, str)
         or not (3 <= len(note.strip()) <= 200)
     ):
@@ -47,8 +52,12 @@ def review(store, run_id, values):
     current = store.load(run_id)
     if revision != current["revision"]:
         raise DomainIssue("STALE_REVIEW")
-    if current["status"] == "APPROVED":
+    if current["status"] in FINAL_STATUSES:
         raise DomainIssue("RUN_FINALIZED")
-    if status == "APPROVED" and not current["report"]["balance"]["releasable"]:
+    checks = current["report"]["balance"]
+    # 正式签发只认全分辨率覆盖；代理交付可先把低分辨率预览交出去。
+    if status == "APPROVED" and not checks["releasable"]:
+        raise DomainIssue("UNRESOLVED_ISSUES")
+    if status == "PROVISIONAL" and not checks["proxy_releasable"]:
         raise DomainIssue("UNRESOLVED_ISSUES")
     return store.revise(run_id, revision, status, note.strip(), now())

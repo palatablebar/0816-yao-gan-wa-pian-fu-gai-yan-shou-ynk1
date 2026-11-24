@@ -41,3 +41,22 @@ def test_download_attachment(client):
         and "attachment" in response.headers["Content-Disposition"]
     )
     assert response.json["schema"] == "review-evidence/1"
+
+
+def test_evidence_has_reconciliation_ledgers(store, dirty):
+    output = json.loads(artifact(execute(store, dirty)))
+    rows = output["reconciliation"]["rows"]
+    pixels = output["reconciliation"]["pixels"]
+    assert rows["source"] == output["balance"]["input"]
+    assert rows["accepted"] + rows["isolated"] + rows["ignored"] == rows["source"]
+    assert pixels["cases"] and all("checks" in item for item in pixels["cases"])
+    assert output["delivery"]["choice"] == "HOLD"
+
+
+def test_evidence_records_proxy_delivery(store, deadline):
+    record = execute(store, deadline)
+    review(store, record["id"], dict(revision=0, status="PROVISIONAL", note="截止日先交代理"))
+    output = json.loads(artifact(store.load(record["id"])))
+    assert output["delivery"]["choice"] == "DELIVER_PROXY"
+    assert output["review"]["status"] == "PROVISIONAL"
+    assert output["balance"]["proxy_releasable"] and not output["balance"]["releasable"]

@@ -13,8 +13,8 @@ LABELS = {
     "RUN_NOT_FOUND": "批次不存在",
     "REVIEW_FIELDS": "请填写 3 至 200 字复核意见",
     "STALE_REVIEW": "批次已更新，请刷新",
-    "RUN_FINALIZED": "批次已签发",
-    "UNRESOLVED_ISSUES": "存在待处理差异",
+    "RUN_FINALIZED": "批次已签发或已代理交付",
+    "UNRESOLVED_ISSUES": "存在待处理差异或对账未对平",
     "SAMPLE_UNKNOWN": "样例不存在",
     "STAGE_UNKNOWN": "处理阶段不存在",
 }

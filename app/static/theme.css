@@ -31,13 +31,20 @@ body.tiles {margin:0;background:var(--bg);color:var(--ink);font:var(--size)/1.55
 .tiles table {border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;min-width:360px}
 .tiles th,.tiles td {text-align:left;height:var(--row);padding:5px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
 .tiles th {position:sticky;top:0;background:var(--surface);color:var(--sub)} .tiles td:nth-child(n+2):nth-child(-n+4) {text-align:right}
-.tiles .badge {color:var(--alert);font-size:.83em;padding:2px 4px;white-space:nowrap} .tiles .badge:is([data-result="READY"],[data-result="APPROVED"]) {color:var(--accent)}
+.tiles .badge {color:var(--alert);font-size:.83em;padding:2px 4px;white-space:nowrap} .tiles .badge:is([data-result="READY"],[data-result="APPROVED"],[data-result="PROVISIONAL"]) {color:var(--accent)}
 .tiles #detail {margin:0;max-height:230px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font: .91em/1.5 var(--font-num)}
 .tiles #history {list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:var(--gap);margin:0} .tiles #history li {display:flex;align-items:center}
 .tiles #review {margin-top:14px;max-width:580px} .tiles textarea {display:block;width:100%;min-height:54px;cursor:text}
 .tiles .review-actions {display:flex;gap:6px;margin:8px 0}
 .tiles .statusbar {grid-area:statusbar;display:flex;gap:14px;justify-content:space-between;border-top:1px solid var(--line);padding:10px 0}
 .tiles [data-failure="true"] {color:var(--alert)}
+.tiles .delivery {margin:0 0 10px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
+.tiles .delivery-choice {font-weight:700}
+.tiles .delivery-choice[data-choice="SIGN_FULL"] {color:var(--accent)}
+.tiles .delivery-choice[data-choice="DELIVER_PROXY"] {color:var(--warn,#8a5a04)}
+.tiles .delivery-choice[data-choice="HOLD"] {color:var(--alert)}
+.tiles .delivery-ledger,.tiles .delivery-blocks {color:var(--sub);font-size:.92em}
+.tiles .delivery-blocks {color:var(--alert)}
 .tiles .chart {background:repeating-linear-gradient(0deg,var(--surface) 0 21px,var(--line) 21px 22px)}
 .tiles .chart #visual {min-height:180px}
 .tiles .inspection{border:2px dashed var(--line)}
@@ -53,3 +60,8 @@ body.tiles {margin:0;background:var(--bg);color:var(--ink);font:var(--size)/1.55
 .coverage-filled {background:var(--accent)}
 .coverage-hole {background:var(--surface)}
 .coverage-legend {padding-top:8px}
+.coverage-row {display:grid;grid-template-columns:1fr;gap:4px;padding:8px 0}
+.coverage-row > span {font-size:.92em;color:var(--sub)}
+.coverage-track {height:18px;border:1px solid var(--accent);border-radius:3px;overflow:hidden}
+.coverage-row[data-tier="proxy"] .coverage-filled {background:var(--warn,#8a5a04)}
+.coverage-row[data-tier="proxy"] .coverage-track {border-color:var(--warn,#8a5a04)}
